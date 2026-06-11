@@ -1005,6 +1005,51 @@
 <script>
   window.iSpiceOurWebsitesPageUrl = "https://ispicefoods.com/our-websites/";
 </script>
+<!-- ═══════════════════════════════════════════════════════════════
+     AutoSignature fix — hide the cellphone row (icon + number)
+     whenever the Cellphone field is empty.
 
+     HOW TO INSTALL (GitHub repo: moezad/AutoSignature)
+     1. Open index.html in the repo (edit on github.com is fine).
+     2. Scroll to the very bottom and paste this whole block
+        just BEFORE the closing </body> tag.
+     3. Commit — GitHub Pages republishes automatically in ~1 min.
+═══════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  function syncCellRow() {
+    var input = document.getElementById('employeeCellphone');
+    var row   = document.getElementById('sigCellRow');
+    if (!row) return;
+    var val = (input && input.value ? input.value : '').trim();
+    // hide the whole row (icon included) when there's no cellphone
+    row.style.display = val ? '' : 'none';
+    // also blank the number spans when empty, so nothing leaks into the copy
+    if (!val) {
+      var num = document.getElementById('sigCellNumber');
+      if (num) num.textContent = '';
+    }
+  }
+
+  // re-sync after the page's own Apply / Reset handlers run
+  ['applyInfo', 'resetInfo'].forEach(function (fnName) {
+    var orig = window[fnName];
+    if (typeof orig === 'function') {
+      window[fnName] = function () {
+        var out = orig.apply(this, arguments);
+        syncCellRow();
+        return out;
+      };
+    }
+  });
+
+  // and keep it live while typing
+  var input = document.getElementById('employeeCellphone');
+  if (input) input.addEventListener('input', syncCellRow);
+
+  // initial state on load
+  syncCellRow();
+})();
+</script>
 </body>
 </html>
