@@ -910,6 +910,15 @@
       const el = document.getElementById(id);
       const clone = el.cloneNode(true);
 
+      // Outlook ignores display:none, so hidden rows/spans (e.g. the empty
+      // cellphone row and its "Ext." label) must be removed from the copy,
+      // not just hidden.
+      clone.querySelectorAll('*').forEach(function(node) {
+        if (node.style && node.style.display === 'none' && node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      });
+
       clone.querySelectorAll('a[href]').forEach(function(link) {
         const href = link.getAttribute('href') || '';
         if (href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0 || href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
